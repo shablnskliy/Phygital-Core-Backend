@@ -16,21 +16,13 @@ public class TeamService {
     private final TeamRepository teamRepository;
 
     public List<TeamDto> getAllTeams() {
-        return teamRepository.findAll().stream().map(this::mapToDto).toList();
+        // Берем только неудаленные команды
+        return teamRepository.findAllByIsDeletedFalse().stream().map(this::mapToDto).toList();
     }
 
     public TeamDto getTeamById(UUID id) {
         Team team = teamRepository.findById(id)
                 .orElseThrow(() -> new AppException(404, "Команда не найдена"));
-        return mapToDto(team);
-    }
-
-    public TeamDto updateTeam(UUID id, TeamRequest request) {
-        Team team = teamRepository.findById(id)
-                .orElseThrow(() -> new AppException(404, "Команда не найдена"));
-        team.setName(request.getName());
-        // Можно также обновить дисциплину, если нужно
-        teamRepository.save(team);
         return mapToDto(team);
     }
 
@@ -44,7 +36,7 @@ public class TeamService {
                 TeamMember member = new TeamMember();
                 member.setName(m.getName());
                 member.setCaptain(m.isCaptain());
-                member.setUserId(m.getUserId()); // <-- ДОБАВИЛИ ЭТУ СТРОКУ (сохраняем ID юзера)
+                member.setUserId(m.getUserId());
                 member.setTeam(team);
                 return member;
             }).toList();
@@ -55,14 +47,42 @@ public class TeamService {
         return mapToDto(team);
     }
 
+    public TeamDto updateTeam(UUID id, TeamRequest request) {
+        Team team = teamRepository.findById(id)
+                .orElseThrow(() -> new AppException(404, "Команда не найдена"));
+
+        team.setName(request.getName());
+        team.setDiscipline(request.getDiscipline());
+
+        if (request.getMembers() != null) {
+            team.getMembers().clear();
+            List<TeamMember> members = request.getMembers().stream().map(m -> {
+                TeamMember member = new TeamMember();
+                member.setName(m.getName());
+                member.setCaptain(m.isCaptain());
+                member.setUserId(m.getUserId());
+                member.setTeam(team);
+                return member;
+            }).toList();
+            team.getMembers().addAll(members);
+        }
+
+        teamRepository.save(team);
+        return mapToDto(team);
+    }
+
+    // МЯГКОЕ УДАЛЕНИЕ
     public void deleteTeam(UUID id) {
-        teamRepository.deleteById(id);
+        Team team = teamRepository.findById(id)
+                .orElseThrow(() -> new AppException(404, "Команда не найдена"));
+        team.setDeleted(true); // Помечаем как удаленную
+        teamRepository.save(team);
     }
 
     private TeamDto mapToDto(Team team) {
         List<TeamMemberDto> memberDtos = team.getMembers().stream().map(m ->
                 TeamMemberDto.builder()
-                        .id(m.getUserId()) // <-- ИЗМЕНИЛИ ЭТУ СТРОКУ (отдаем ID юзера вместо ID записи в БД)
+                        .id(m.getUserId())
                         .name(m.getName())
                         .captain(m.isCaptain())
                         .build()

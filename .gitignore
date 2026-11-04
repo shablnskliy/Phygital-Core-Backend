@@ -12,3 +12,5 @@ target/
 
 # Mac / OS
 .DS_Store
+phygital_db.mv.db
+phygital_db.trace.db

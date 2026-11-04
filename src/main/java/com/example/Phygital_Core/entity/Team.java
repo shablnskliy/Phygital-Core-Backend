@@ -16,6 +16,11 @@ public class Team {
     private UUID id;
 
     @Column(nullable = false)
+    @Builder.Default
+    private boolean isDeleted = false;
+
+
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)

@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/tournament-applications")
+@RequestMapping("/tournament-applications")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
 public class TournamentApplicationController {
@@ -26,6 +26,10 @@ public class TournamentApplicationController {
 
     @PostMapping
     public ResponseEntity<TournamentApplication> create(@RequestBody TournamentApplication request) {
+        // Безопасность: сервер сам ставит статус и генерирует ID
+        request.setStatus("NEW");
+        request.setId(null);
+        request.setCreatedAt(null); // Позволим JPA самому поставить дату
         return ResponseEntity.ok(applicationRepository.save(request));
     }
 

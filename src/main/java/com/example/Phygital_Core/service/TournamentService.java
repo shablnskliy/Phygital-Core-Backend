@@ -19,7 +19,8 @@ public class TournamentService {
     private final TournamentRepository tournamentRepository;
 
     public List<TournamentDto> getAll() {
-        return tournamentRepository.findAll().stream().map(this::mapToDto).toList();
+        // Берем только неудаленные турниры
+        return tournamentRepository.findAllByIsDeletedFalse().stream().map(this::mapToDto).toList();
     }
 
     public TournamentDto getById(UUID id) {
@@ -43,8 +44,12 @@ public class TournamentService {
         return mapToDto(tournament);
     }
 
+    // МЯГКОЕ УДАЛЕНИЕ
     public void delete(UUID id) {
-        tournamentRepository.deleteById(id);
+        Tournament tournament = tournamentRepository.findById(id)
+                .orElseThrow(() -> new AppException(404, "Турнир не найден"));
+        tournament.setDeleted(true); // Помечаем как удаленный
+        tournamentRepository.save(tournament);
     }
 
     private void updateEntityFromRequest(Tournament t, TournamentRequest r) {
@@ -57,8 +62,8 @@ public class TournamentService {
         t.setShortDescription(r.getShortDescription());
         t.setDescription(r.getDescription());
         t.setStartAt(r.getStartAt());
-        t.setEndAt(r.getEndAt());
-        t.setRegistrationEndsAt(r.getRegistrationEndsAt());
+        t.setEndAt(r.getEndAt()); // Теперь может быть null
+        t.setRegistrationEndsAt(r.getRegistrationEndsAt()); // Теперь может быть null
         if (r.getRules() != null) {
             t.setRules(r.getRules());
         }

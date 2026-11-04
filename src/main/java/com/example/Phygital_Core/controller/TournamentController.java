@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/tournaments")
+@RequestMapping("/tournaments")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
 public class TournamentController {

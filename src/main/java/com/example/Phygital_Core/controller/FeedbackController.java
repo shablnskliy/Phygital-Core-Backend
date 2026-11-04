@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/feedback")
+@RequestMapping("/feedback")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
 public class FeedbackController {

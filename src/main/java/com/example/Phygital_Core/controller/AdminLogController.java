@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin-logs")
+@RequestMapping("/admin-logs")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
 public class AdminLogController {

@@ -35,10 +35,10 @@ public class Tournament {
     @Column(nullable = false)
     private LocalDateTime startAt;
 
-    @Column(nullable = false)
+    // Убрали nullable = false (теперь дата окончания необязательна)
     private LocalDateTime endAt;
 
-    @Column(nullable = false)
+    // Убрали nullable = false (срок регистрации тоже необязателен)
     private LocalDateTime registrationEndsAt;
 
     @ElementCollection
@@ -61,6 +61,10 @@ public class Tournament {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isDeleted = false;
 
     @PreUpdate
     protected void onUpdate() {

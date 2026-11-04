@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/admin/users")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
 public class UserController {
@@ -35,8 +35,8 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    // 2. Обновить пользователя (например, поменять роль или имя)
-    @PutMapping("/{id}")
+    // 2. Обновить пользователя (поменяли PUT на PATCH)
+    @PatchMapping("/{id}")
     public ResponseEntity<AuthUserDto> updateUser(@PathVariable UUID id, @RequestBody AuthUserDto request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(404, "Пользователь не найден"));
@@ -58,7 +58,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    // 4. Сброс пароля (Админ меняет пароль юзеру)
+    // 4. Сброс пароля
     @PostMapping("/{id}/reset-password")
     public ResponseEntity<Void> resetPassword(@PathVariable UUID id) {
         User user = userRepository.findById(id)
@@ -68,6 +68,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    // 5. Создать пользователя
     @PostMapping
     public ResponseEntity<AuthUserDto> createUser(@RequestBody RegisterPayload payload) {
         if (userRepository.existsByEmailIgnoreCase(payload.getEmail())) {
