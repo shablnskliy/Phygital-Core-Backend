@@ -1,6 +1,7 @@
 package com.example.Phygital_Core.dto;
 
 import com.example.Phygital_Core.entity.UserRole;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +22,10 @@ public class AuthUserDto {
     private String email;
     private String phone;
     private String telegram;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd") // <-- ВАЖНО
     private LocalDate birthDate;
+
     private UserRole role;
     private String bio;
     private String avatar;

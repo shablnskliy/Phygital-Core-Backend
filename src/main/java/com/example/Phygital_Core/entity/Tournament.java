@@ -35,10 +35,10 @@ public class Tournament {
     @Column(nullable = false)
     private LocalDateTime startAt;
 
-    // Убрали nullable = false (теперь дата окончания необязательна)
+
     private LocalDateTime endAt;
 
-    // Убрали nullable = false (срок регистрации тоже необязателен)
+
     private LocalDateTime registrationEndsAt;
 
     @ElementCollection

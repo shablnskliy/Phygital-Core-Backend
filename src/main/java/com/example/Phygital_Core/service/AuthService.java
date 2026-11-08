@@ -50,11 +50,43 @@ public class AuthService {
         String token = jwtService.generateToken(user);
         return new AuthResponse(token, mapToDto(user));
     }
+    public AuthUserDto updateProfile(UUID userId, ProfilePatch patch) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(404, "Пользователь не найден"));
+
+        if (patch.getFirstName() != null) user.setFirstName(patch.getFirstName().trim());
+        if (patch.getLastName() != null) user.setLastName(patch.getLastName().trim());
+        if (patch.getPhone() != null) user.setPhone(patch.getPhone());
+        if (patch.getTelegram() != null) user.setTelegram(patch.getTelegram());
+        if (patch.getBirthDate() != null) user.setBirthDate(patch.getBirthDate());
+        if (patch.getBio() != null) user.setBio(patch.getBio());
+
+        userRepository.save(user);
+        return mapToDto(user);
+    }
 
     public AuthUserDto getCurrentUser(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(404, "Пользователь не найден"));
         return mapToDto(user);
+    }
+    public void changePassword(UUID userId, ChangePasswordRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(404, "Пользователь не найден"));
+
+        // Проверяем, что старый пароль верный
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new AppException(400, "Текущий пароль указан неверно");
+        }
+
+        // Проверяем длину нового пароля
+        if (request.getNewPassword() == null || request.getNewPassword().length() < 8) {
+            throw new AppException(400, "Новый пароль должен содержать не менее 8 символов");
+        }
+
+        // Шифруем и сохраняем
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
     }
 
     // Вспомогательный метод для конвертации Entity в DTO

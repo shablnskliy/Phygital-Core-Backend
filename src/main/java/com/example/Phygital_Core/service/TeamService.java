@@ -97,4 +97,16 @@ public class TeamService {
                 .updatedAt(team.getUpdatedAt())
                 .build();
     }
+    public void removeMember(UUID teamId, UUID userId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new AppException(404, "Команда не найдена"));
+
+        boolean removed = team.getMembers().removeIf(m ->
+                m.getUserId() != null && m.getUserId().equals(userId)
+        );
+
+        if (!removed) throw new AppException(404, "Участник не найден в команде");
+
+        teamRepository.save(team);
+    }
 }
