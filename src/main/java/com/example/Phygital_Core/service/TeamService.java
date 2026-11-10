@@ -2,8 +2,10 @@ package com.example.Phygital_Core.service;
 import com.example.Phygital_Core.dto.*;
 import com.example.Phygital_Core.entity.Team;
 import com.example.Phygital_Core.entity.TeamMember;
+import com.example.Phygital_Core.entity.User;
 import com.example.Phygital_Core.exception.AppException;
 import com.example.Phygital_Core.repository.TeamRepository;
+import com.example.Phygital_Core.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TeamService {
     private final TeamRepository teamRepository;
+    private final UserRepository userRepository;
 
     public List<TeamDto> getAllTeams() {
         // Берем только неудаленные команды
@@ -108,5 +111,26 @@ public class TeamService {
         if (!removed) throw new AppException(404, "Участник не найден в команде");
 
         teamRepository.save(team);
+    }
+
+    public void addMember(UUID teamId, UUID userId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new AppException(404, "Команда не найдена"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(404, "Пользователь не найден"));
+
+        // Проверяем, нет ли уже такого игрока
+        boolean alreadyInTeam = team.getMembers().stream()
+                .anyMatch(m -> m.getUserId() != null && m.getUserId().equals(userId));
+
+        if (!alreadyInTeam) {
+            TeamMember newMember = new TeamMember();
+            newMember.setName(user.getFirstName() + " " + user.getLastName());
+            newMember.setCaptain(false);
+            newMember.setUserId(userId);
+            newMember.setTeam(team);
+            team.getMembers().add(newMember);
+            teamRepository.save(team);
+        }
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -37,6 +38,13 @@ public class TeamController {
     @PutMapping("/{id}")
     public ResponseEntity<TeamDto> update(@PathVariable UUID id, @RequestBody TeamRequest request) {
         return ResponseEntity.ok(teamService.updateTeam(id, request));
+    }
+
+    @PostMapping("/{teamId}/members")
+    public ResponseEntity<Void> addMember(@PathVariable UUID teamId, @RequestBody Map<String, String> body) {
+        UUID userId = UUID.fromString(body.get("userId"));
+        teamService.addMember(teamId, userId);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
