@@ -73,4 +73,5 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-}
+}// Разрешаем запросы с твоего сервера, Vercel и локальной разработки
+// Разрешаем запросы с твоего сервера, Vercel и локальной разработки
