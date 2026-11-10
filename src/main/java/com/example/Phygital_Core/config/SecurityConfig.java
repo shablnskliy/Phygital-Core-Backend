@@ -34,8 +34,11 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // Разрешаем ВСЁ, чтобы наверняка (для теста на сервере)
-                        .anyRequest().permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/feedback/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -51,8 +54,17 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("http://194.61.9.235", "https://*.vercel.app", "http://localhost:5173"));
-        config.setAllowedOriginPatterns(List.of("*"));
+
+        // Разрешаем запросы с твоего сервера, Vercel и локальной разработки
+        config.setAllowedOriginPatterns(List.of(
+                "http://194.61.9.235",
+                "http://194.61.9.235:3000",
+                "http://194.61.9.235:8080",
+                "https://*.vercel.app",
+                "http://localhost:5173",
+                "http://localhost:3000"
+        ));
+
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
