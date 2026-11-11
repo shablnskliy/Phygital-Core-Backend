@@ -55,8 +55,12 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // Разрешаем запросы с твоего сервера, Vercel и локальной разработки
+        // Разрешаем запросы с нового домена (HTTPS), IP-адреса и локальной разработки
         config.setAllowedOriginPatterns(List.of(
+                "https://phygitalcore.ru",
+                "https://www.phygitalcore.ru",
+                "http://phygitalcore.ru",
+                "http://www.phygitalcore.ru",
                 "http://194.61.9.235",
                 "http://194.61.9.235:3000",
                 "http://194.61.9.235:8080",
@@ -73,4 +77,4 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-}// Разрешаем запросы с твоего сервера, Vercel и локальной разработки
+}
