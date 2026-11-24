@@ -34,10 +34,18 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        // 1. Разрешаем предварительные запросы (CORS)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // 2. Swagger
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        // 3. Авторизация
                         .requestMatchers("/auth/**").permitAll()
+                        // 4. Обратная связь
                         .requestMatchers("/feedback/**").permitAll()
+                        // 5. ПУБЛИЧНЫЙ ПРОСМОТР (только GET, без токена)
+                        .requestMatchers(HttpMethod.GET, "/teams/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/tournaments/**").permitAll()
+                        // 6. Всё остальное — только с токеном
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -54,8 +62,6 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-
-        // Разрешаем запросы с нового домена (HTTPS), IP-адреса и локальной разработки
         config.setAllowedOriginPatterns(List.of(
                 "https://phygitalcore.ru",
                 "https://www.phygitalcore.ru",
@@ -68,7 +74,6 @@ public class SecurityConfig {
                 "http://localhost:5173",
                 "http://localhost:3000"
         ));
-
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
