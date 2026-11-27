@@ -1,19 +1,6 @@
 package com.example.Phygital_Core.controller;
 
-import com.example.Phygital_Core.entity.Notification;
-import com.example.Phygital_Core.entity.TournamentApplication;
-import com.example.Phygital_Core.repository.NotificationRepository;
-import com.example.Phygital_Core.repository.TeamRepository;
-import com.example.Phygital_Core.repository.TournamentApplicationRepository;
-import com.example.Phygital_Core.repository.TournamentRepository;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import com.example.Phygital_Core.entity.Notification;
 import com.example.Phygital_Core.entity.TournamentApplication;
 import com.example.Phygital_Core.repository.NotificationRepository;
@@ -45,6 +32,13 @@ public class TournamentApplicationController {
         return ResponseEntity.ok(applicationRepository.findAll());
     }
 
+    @PostMapping
+    public ResponseEntity<TournamentApplication> create(@RequestBody TournamentApplication request) {
+        request.setStatus("NEW");
+        request.setId(null);
+        return ResponseEntity.ok(applicationRepository.save(request));
+    }
+
     @PutMapping("/{id}/status")
     public ResponseEntity<TournamentApplication> updateStatus(@PathVariable UUID id, @RequestBody Map<String, String> body) {
         TournamentApplication app = applicationRepository.findById(id).orElseThrow();
@@ -52,7 +46,6 @@ public class TournamentApplicationController {
         app.setStatus(newStatus);
         TournamentApplication savedApp = applicationRepository.save(app);
 
-        // Создаем уведомление для капитана команды
         try {
             var team = teamRepository.findById(app.getTeamId()).orElse(null);
             var tournament = tournamentRepository.findById(app.getTournamentId()).orElse(null);
