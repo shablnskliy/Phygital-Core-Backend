@@ -8,6 +8,7 @@ import java.util.UUID;
 @Data @Builder @NoArgsConstructor @AllArgsConstructor
 public class TournamentDto {
     private UUID id;
+    private boolean isPartner;
     private String publicNumber;
     private String name;
     private String discipline;

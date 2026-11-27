@@ -62,13 +62,14 @@ public class TournamentService {
         t.setShortDescription(r.getShortDescription());
         t.setDescription(r.getDescription());
         t.setStartAt(r.getStartAt());
-        t.setEndAt(r.getEndAt()); // Теперь может быть null
-        t.setRegistrationEndsAt(r.getRegistrationEndsAt()); // Теперь может быть null
+        t.setEndAt(r.getEndAt());
+        t.setRegistrationEndsAt(r.getRegistrationEndsAt());
         if (r.getRules() != null) {
             t.setRules(r.getRules());
         }
         t.setImageName(r.getImageName());
         t.setImageUrl(r.getImageUrl());
+        t.setPartner(r.isPartner()); // <-- ДОБАВИЛИ ВОТ ЭТУ СТРОКУ
     }
 
     private TournamentDto mapToDto(Tournament t) {

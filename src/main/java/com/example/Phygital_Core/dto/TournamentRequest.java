@@ -10,6 +10,7 @@ public class TournamentRequest {
     private String name;
     private String discipline;
     private String format;
+    private boolean isPartner;
     private String city;
     private String venue;
     private String shortDescription;

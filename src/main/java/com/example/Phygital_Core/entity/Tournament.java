@@ -21,6 +21,10 @@ public class Tournament {
     private String name;
 
     @Column(nullable = false)
+    @Builder.Default
+    private boolean isPartner = false;
+
+    @Column(nullable = false)
     private String discipline;
     private String format;
     private String city;
