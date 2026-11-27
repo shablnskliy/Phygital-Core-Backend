@@ -14,6 +14,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import com.example.Phygital_Core.entity.Notification;
+import com.example.Phygital_Core.entity.TournamentApplication;
+import com.example.Phygital_Core.repository.NotificationRepository;
+import com.example.Phygital_Core.repository.TeamRepository;
+import com.example.Phygital_Core.repository.TournamentApplicationRepository;
+import com.example.Phygital_Core.repository.TournamentRepository;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/tournament-applications")
@@ -24,7 +38,6 @@ public class TournamentApplicationController {
     private final TeamRepository teamRepository;
     private final TournamentRepository tournamentRepository;
     private final NotificationRepository notificationRepository;
-
     private final TournamentApplicationRepository applicationRepository;
 
     @GetMapping
@@ -41,12 +54,10 @@ public class TournamentApplicationController {
 
         // Создаем уведомление для капитана команды
         try {
-            // Получаем данные команды и турнира для текста уведомления
             var team = teamRepository.findById(app.getTeamId()).orElse(null);
             var tournament = tournamentRepository.findById(app.getTournamentId()).orElse(null);
 
             if (team != null && tournament != null) {
-                // Определяем ID капитана команды
                 UUID captainId = team.getMembers().stream()
                         .filter(m -> m.isCaptain() && m.getUserId() != null)
                         .map(m -> m.getUserId())
@@ -74,12 +85,5 @@ public class TournamentApplicationController {
         }
 
         return ResponseEntity.ok(savedApp);
-    }
-
-    @PutMapping("/{id}/status")
-    public ResponseEntity<TournamentApplication> updateStatus(@PathVariable UUID id, @RequestBody Map<String, String> body) {
-        TournamentApplication app = applicationRepository.findById(id).orElseThrow();
-        app.setStatus(body.get("status"));
-        return ResponseEntity.ok(applicationRepository.save(app));
     }
 }
